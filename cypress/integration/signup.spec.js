@@ -23,7 +23,7 @@ describe('cadastro', function () {
         });
     });
 
-    context('quando o email já exite', function() {
+    context('quando o email já existe', function() {
         const user = {
             name: 'Aline Reis',
             email: 'aline@samuraivs.com',
@@ -110,7 +110,7 @@ describe('cadastro', function () {
         })
 
         alertMessages.forEach(function (alert) {
-            it.only('deve exibir ' + alert.toLowerCase(), function () {
+            it('deve exibir ' + alert.toLowerCase(), function () {
                 signupPage.alertHaveText(alert)
             })
         })
