@@ -1,71 +1,52 @@
 import signupPage from '../support/pages/signup'
 
 describe('cadastro', function () {
-    context('quando o usário é novato', function () {
-        const user = {
-            name: 'Rafael Reis',
-            email: 'rafael@samuraivs.com',
-            password: 'pwd123'
-        }
 
+    before(function () {
+        cy.fixture('signup').then(function (signup) {
+            this.success = signup.success;
+            this.email_dup = signup.email_dup;
+            this.email_inv = signup.email_inv;
+            this.short_password = signup.short_password;
+
+        })
+    })
+
+    context('quando o usário é novato', function () {
         before(function () {
-            cy.task('removeUser', user.email)
+            cy.task('removeUser', this.success.email)
                 .then(function (result) {
                     console.log(result)
                 })
-        })
+        });
 
         it('deve cadastrar um novo usuário com sucesso', function () {
             signupPage.go()
-            signupPage.form(user)
+            signupPage.form(this.success)
             signupPage.submit()
-            signupPage.toast.shouldHaveTest('Agora você se tornou um(a) Samurai, faça seu login para ver seus agendamentos!')
+            signupPage.toast.shouldHaveText('Agora você se tornou um(a) Samurai, faça seu login para ver seus agendamentos!')
         });
     });
 
     context('quando o email já existe', function() {
-        const user = {
-            name: 'Aline Reis',
-            email: 'aline@samuraivs.com',
-            password: 'pwd123',
-            is_provider: true
-        }
-
         before(function() {
-            cy.task('removeUser', user.email)
-            .then(function (result) {
-                console.log(result)
-            })
-
-            cy.request(
-                'POST',
-                'http://localhost:3333/users',
-                user
-            ).then(function (response) {
-                expect(response.status).to.eq(200)
-            });
+            cy.postUser(this.email_dup);
         });
 
         it('não deve cadastrar usuário', function () {  
             signupPage.go()
-            signupPage.form(user)
+            signupPage.form(this.email_dup)
             signupPage.submit()
-            signupPage.toast.shouldHaveTest('Email já cadastrado para outro usuário.')
+            signupPage.toast.shouldHaveText('Email já cadastrado para outro usuário.')
         });
     });
 
     context('quando o email é incorreto', function () {
-        const user = {
-            name: 'Rafael Elizabeth Olsen',
-            email: 'liza.yahoo.com',
-            password: 'pwd123'
-        }
-
         it('deve exibir mensagem de alerta', function () {
             signupPage.go()
-            signupPage.form(user)
+            signupPage.form(this.email_inv)
             signupPage.submit()
-            signupPage.alertHaveText('Informe um email válido')
+            signupPage.alert.haveText('Informe um email válido')
             
 
         })
@@ -81,19 +62,15 @@ describe('cadastro', function () {
 
         passwords.forEach(function (p){
             it('não deve cadastrar com a senha : ' + p, function () {
-                const user = {
-                    name: 'Aline Reis',
-                    email: 'json@gmail.com',
-                    password: p
-                }
+                this.short_password.password = p
 
-                signupPage.form(user)
+                signupPage.form(this.short_password)
                 signupPage.submit()
             });
         });
 
         afterEach(function () {
-            signupPage.alertHaveText('Pelo menos 6 caracteres')
+            signupPage.alert.haveText('Pelo menos 6 caracteres')
         });
     });
 
@@ -111,8 +88,8 @@ describe('cadastro', function () {
 
         alertMessages.forEach(function (alert) {
             it('deve exibir ' + alert.toLowerCase(), function () {
-                signupPage.alertHaveText(alert)
+                signupPage.alert.haveText(alert)
             })
-        })
-    })
+        });
+    });
 });
