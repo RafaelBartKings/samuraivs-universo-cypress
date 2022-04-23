@@ -1,6 +1,6 @@
 {
-    "baseUrl": "https://samuraivs-web-rafael.herokuapp.com/",
-    "apiServer": "https://samuraivs-api-rafael.herokuapp.com/",
+    "baseUrl": "https://samuraivs-web-rafael.herokuapp.com",
+    "apiServer": "https://samuraivs-api-rafael.herokuapp.com",
     "viewportWidth": 1440,
     "viewportHeight": 900,
     "defaultCommandTimeout": 30000,
